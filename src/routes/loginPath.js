@@ -7,8 +7,8 @@ const serverRouter = express.Router();
 serverRouter.use(express.json());
 
 serverRouter.post('/', (_req, res) => {
-  const symbol = randomToken();
-  return res.status(200).json({ symbol });
+    const token = randomToken();
+    return res.status(200).json({ token });
 });
 
 module.exports = serverRouter;

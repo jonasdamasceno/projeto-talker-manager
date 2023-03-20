@@ -5,6 +5,7 @@ const loginPath = require('./routes/loginPath');
 
 const app = express();
 app.use(express.json());
+
 app.use('/talker', talkerRouter);
 app.use('/login', loginPath);
 

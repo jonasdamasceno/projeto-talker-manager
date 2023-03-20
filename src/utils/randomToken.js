@@ -1,7 +1,7 @@
 const randomToken = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characterOfValidation = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   return Array.from({ length: 16 }, () =>
-    chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+  characterOfValidation.charAt(Math.floor(Math.random() * characterOfValidation.length))).join('');
 };
 
 module.exports = randomToken;
