@@ -103,8 +103,7 @@ serverRouter.get('/:id', async (req, res) => {
   return res.status(200).json(talker);
 });
 
-serverRouter.post('/', tokenValid, validateName, validateAge, 
-talkValid, async (req, res) => {
+serverRouter.post('/', tokenValid, validateName, validateAge, talkValid, async (req, res) => {
     const { name, age, talk } = req.body;
 
     const talkers = await loadTalkersData();
@@ -113,6 +112,27 @@ talkValid, async (req, res) => {
     talkers.push(newTalker);
     await writeTalkerToFile(talkers);
 
-    return res.status(201).json(newTalker); 
+    return res.status(201).json(newTalker);
+  });
+
+serverRouter.post('/', tokenValid, validateName, validateAge, talkValid, async (req, res) => {
+   try {
+     const { id } = req.params;
+     const { name, age, talk } = req.body;
+
+     const talkers = await loadTalkersData();
+
+     const index = talkers.findIndex((tal) => tal.id === +id);
+
+     if (index === -1) throw new Error('Pessoa palestrante não encontrada');
+
+     talkers[index] = { ...talkers[index], name, age, talk };
+
+     await writeTalkerToFile(talkers);
+
+     res.status(200).json(talkers[index]);
+   } catch (error) {
+     res.status(404).json({ message: error.message });
+   }
   });
 module.exports = serverRouter;
