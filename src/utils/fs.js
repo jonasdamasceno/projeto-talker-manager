@@ -8,4 +8,12 @@ const loadTalkersData = async () => {
   }
 };
 
-module.exports = { loadTalkersData };
+const writeTalkerToFile = async (talkers) => {
+  try {
+    await fs.writeFile('./src/talker.json', JSON.stringify(talkers));
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+module.exports = { loadTalkersData, writeTalkerToFile };
