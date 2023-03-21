@@ -9,13 +9,13 @@ serverRouter.use(express.json());
 const tokenValid = (req, res, next) => {
   const { authorization } = req.headers;
 
-  const isValidLength = authorization && authorization.length === 16;
+  // const isValidLength = authorization.length !== 16;
 
-  if (!isValidLength) {
-    return res.status(401).json({ message: 'Token inválido' });
-  }
   if (!authorization) {
     return res.status(401).json({ message: 'Token não encontrado' });
+  }
+  if (authorization.length !== 16) {
+    return res.status(401).json({ message: 'Token inválido' });
   }
 
   next();
@@ -62,17 +62,12 @@ const validateDateInput = (watchedAt) => {
 };
 
 const validateRate = (rate) => {
-  const result = { valid: true };
-
   if (rate === undefined) {
-    result.valid = false;
-    result.message = 'O campo "rate" é obrigatório';
-  } else if (!Number.isInteger(rate) || rate < 1 || rate > 5) {
-    result.valid = false;
-    result.message = 'O campo "rate" deve ser um número inteiro entre 1 e 5';
+    throw new Error('O campo "rate" é obrigatório');
   }
-
-  return result;
+  if (!Number.isInteger(rate) || rate < 1 || rate > 5) {
+    throw new Error('O campo "rate" deve ser um número inteiro entre 1 e 5');
+  }
 };
 
 const talkValid = (req, res, next) => {
