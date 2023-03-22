@@ -115,7 +115,7 @@ serverRouter.post('/', tokenValid, validateName, validateAge, talkValid, async (
     return res.status(201).json(newTalker);
   });
 
-serverRouter.post('/', tokenValid, validateName, validateAge, talkValid, async (req, res) => {
+serverRouter.put('/:id', tokenValid, validateName, validateAge, talkValid, async (req, res) => {
   const { id } = req.params;
   const { name, age, talk } = req.body;
 
@@ -123,14 +123,30 @@ serverRouter.post('/', tokenValid, validateName, validateAge, talkValid, async (
 
   const index = talkers.find((tal) => tal.id === +id);
 
-    if (!index) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
-
+  if (!index) { 
+    return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+  }
   index.name = name;
   index.age = age;
   index.talk = talk;
   await writeTalkerToFile(talkers);
 
-  return res.status(201).json(index);
+  return res.status(200).json(index);
+  });
+
+  serverRouter.delete('/:id', tokenValid, async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const talkers = await loadTalkersData();
+
+      const newTalkers = talkers.filter((talker) => talker.id !== +id);
+
+      await writeTalkerToFile(newTalkers);
+
+      return res.sendStatus(204);
+    } catch (error) {
+      return next(error);
+    }
   });
 
 module.exports = serverRouter;
