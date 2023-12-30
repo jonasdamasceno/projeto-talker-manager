@@ -7,14 +7,15 @@ const serverRouter = express.Router();
 serverRouter.use(express.json());
 
 const tokenValid = (req, res, next) => {
-  const { authorization } = req.headers;
+  const token = req.headers.authorization;
+  // const { authorization } = req.headers;
 
   // const isValidLength = authorization.length !== 16;
 
-  if (!authorization) {
+  if (!token) {
     return res.status(401).json({ message: 'Token não encontrado' });
   }
-  if (authorization.length !== 16) {
+  if (token.length !== 16) {
     return res.status(401).json({ message: 'Token inválido' });
   }
 
@@ -115,26 +116,29 @@ serverRouter.post('/', tokenValid, validateName, validateAge, talkValid, async (
     return res.status(201).json(newTalker);
   });
 
-serverRouter.put('/:id', tokenValid, validateName, validateAge, talkValid, async (req, res) => {
-  const { id } = req.params;
-  const { name, age, talk } = req.body;
+serverRouter.put('/talker/id', tokenValid, validateName, validateAge, talkValid,
+  async (req, res) => {
+    const { id } = req.params;
+    const { name, age, talk } = req.body;
 
-  const talkers = await loadTalkersData();
+    const talkers = await loadTalkersData();
 
-  const index = talkers.find((tal) => tal.id === +id);
+    const talker = talkers.find((tal) => tal.id === +id);
 
-  if (!index) { 
-    return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
-  }
-  index.name = name;
-  index.age = age;
-  index.talk = talk;
-  await writeTalkerToFile(talkers);
+    if (!talker) {
+      return res
+        .status(404)
+        .json({ message: 'Pessoa palestrante não encontrada' });
+    }
 
-  return res.status(200).json(index);
+    talker.name = name;
+    talker.age = age;
+    talker.talk = talk;
+    await writeTalkerToFile(talkers);
+    return res.status(200).json(talker);
   });
 
-  serverRouter.delete('/:id', tokenValid, async (req, res, next) => {
+  serverRouter.delete('/talker/id', tokenValid, async (req, res, next) => {
     try {
       const { id } = req.params;
       const talkers = await loadTalkersData();
